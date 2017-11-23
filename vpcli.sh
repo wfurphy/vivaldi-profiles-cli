@@ -75,16 +75,16 @@ vpcli_default="${HOME}/Library/Application Support/Vivaldi"
 
 if [ $# -eq 0 ]; then
     echo $''
-    echo $'\e[1;36m:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $'\e[1;36m:: Vivaldi Profiles CLI :::> \e[0m\e[1m'"Options and Examples"
-    echo $'\e[1;36m:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     echo $''
     echo $'\e[1;36mDescription :::>'
     echo $''
     echo $'             \e[0mA command-line utility for managing multiple instance profiles in Vivaldi browser.'
-    echo $'             \e[0mOpens a new instance of Vivaldi using the target profile. If the target does not exist a new'
-    echo $'             \e[0mprofile will be created and opened in Vivaldi.'
+    echo $'             \e[0mOpens a new instance of Vivaldi using the target profile. If the target does not'
+    echo $'             \e[0m exist a new profile will be created and opened in Vivaldi.'
     echo $'             \e[0m\e[1mhttps://vivaldi.com \e[0m| \e[1mhttps://github.com/wfurphy/vivaldi-profiles-cli'
     echo $''
     echo $''
@@ -110,7 +110,7 @@ if [ $# -eq 0 ]; then
     echo $'             \e[0mConfirmation is required to overwrite existing profiles. Providing \e[4mdefault\e[0m as'
     echo $'             \e[0mthe source will copy from the default Vivaldi location.'
     echo $''
-    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $'\e[1;36m:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     exit
 fi

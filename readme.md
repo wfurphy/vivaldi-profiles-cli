@@ -2,9 +2,9 @@
 
 ##### Documentation still under development, sorry!
 
-Vivali Profile CLI is a command-line utility for managing multiple instance profiles in Vivaldi browser. Think of it like the multiple profile switcher in Chrome.  
+Vivali Profile CLI is a command-line utility for managing multiple instance profiles in [Vivaldi]('https://vivaldi.com') browser. Think of it like the multiple profile switcher in Chrome.  
 
-Just using the profile name you can open a new instance of Vivaldi using that profile. It will even create the profile for you if it doesn't exist. You can also copy settings from another profile and change which profile is opened as default.
+By specifying a name you can open a new instance of Vivaldi using that profile. It will even create the profile for you if it doesn't exist. You can also copy settings from another profile and change which profile is opened as default.
 
 So, now that you have Vivaldi Profile CLI, you can uninstall Chrome! ;)
 
@@ -14,8 +14,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-OS X, MacOS or Linux with bash
-[Vivaldi]('https://vivaldi.com') Web Browser
+* OS X, MacOS or Linux with bash
+* [Vivaldi]('https://vivaldi.com') Web Browser
 
 ### Installing
 
