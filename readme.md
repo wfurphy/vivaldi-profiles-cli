@@ -23,7 +23,7 @@ Installing Vivialdi
 
 Install via curl (copy and past this whole block)
 ```bash
-curl https://raw.github.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh > vpcli.sh && 
+curl https://raw.githubusercontent.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh && 
   chmod 755 vpcli.sh &&  
   mv vpcli.sh /usr/local/bin/vpcli &&
   source ~/.bashrc
