@@ -15,7 +15,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 * OS X, MacOS or Linux with bash
-* [Vivaldi]('https://vivaldi.com') Web Browser
+*[Vivaldi]('https://vivaldi.com') Web Browser
 
 ### Installing
 
@@ -33,7 +33,7 @@ OR One step at a time:
 
 1. Download
 ```bash
-curl https://raw.github.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh
+curl https://raw.githubusercontent.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh
 ```
 
 
