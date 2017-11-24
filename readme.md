@@ -26,7 +26,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 #### Copy and paste this entire block in terminal
 ```bash
-curl https://cdn.rawgit.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh && 
+curl -O https://cdn.rawgit.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh && 
   chmod 755 vpcli.sh &&  
   mv vpcli.sh /usr/local/bin/vpcli &&
   vpcli
