@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #|---------------------------------------------------------------------------------------------------->
-#| Vivaldi Profile CLI v0.1.0
+#| Vivaldi Profile CLI v0.1.1
 #|
 #| A command-line utility for managing multiple instance profiles in Vivaldi browser.
 #| Author: Will Furphy
@@ -76,7 +76,7 @@ vpcli_default="${HOME}/Library/Application Support/Vivaldi"
 if [ $# -eq 0 ]; then
     echo $''
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
-    echo $'\e[1;36m:: Vivaldi Profiles CLI :::> \e[0m\e[1m'"Options and Examples"
+    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.1 \e[0m'
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     echo $''
@@ -84,20 +84,23 @@ if [ $# -eq 0 ]; then
     echo $''
     echo $'             \e[0mA command-line utility for managing multiple instance profiles in Vivaldi browser.'
     echo $'             \e[0mOpens a new instance of Vivaldi using the target profile. If the target does not'
-    echo $'             \e[0m exist a new profile will be created and opened in Vivaldi.'
-    echo $'             \e[0m\e[1mhttps://vivaldi.com \e[0m| \e[1mhttps://github.com/wfurphy/vivaldi-profiles-cli'
+    echo $'             \e[0mexist a new profile will be created and opened in Vivaldi.'
+    echo $''
+    echo $'             \e[1mhttps://github.com/wfurphy/vivaldi-profiles-cli  \e[0m|  \e[0m\e[1mhttps://vivaldi.com\e[0m'
     echo $''
     echo $''
     echo $'\e[1;36mSynopsis :::>'
     echo $''
-    echo $'             \e[0m\e[1mvivaldi-profiles \e[0m\e[4mprofile\e[0m'
-    echo $'             \e[0m\e[1mvivaldi-profiles \e[0m[ \e[1m-n\e[0m ] [ \e[1m-d ] \e[0m[ \e[1m-c\e[0m \e[4msource\e[0m ] \e[4mprofile\e[0m'
+    echo $'             \e[0m\e[1mvpcli \e[0m\e[4mprofile\e[0m'
+    echo $'             \e[0m\e[1mvpcli \e[0m[ \e[1m-l\e[0m ] \e[0m[ \e[0m[ \e[1m-n\e[0m ] [ \e[1m-d \e[0m] [ \e[1m-c\e[0m \e[4msource\e[0m ] \e[4mprofile\e[0m \e[0m]'
     echo $''
     echo $'   \e[0m\e[4mprofile\e[0m   The name of your profile. (required, case sensitive)'
     echo $'             \e[0mA new profile will be created if the requested one does not exist.'
     echo $''
     echo $''
     echo $'\e[1;36mOptions :::>'
+    echo $''
+    echo $'   \e[0m\e[1m-l        List: \e[0mShows a list of all of your existing profiles.'
     echo $''
     echo $'   \e[0m\e[1m-n        No New Mode: \e[0mChanges the default behaviour. The target profile will NOT'
     echo $'             \e[0mbe created if it does not exist and an error will be thrown.'
@@ -110,7 +113,7 @@ if [ $# -eq 0 ]; then
     echo $'             \e[0mConfirmation is required to overwrite existing profiles. Providing \e[4mdefault\e[0m as'
     echo $'             \e[0mthe source will copy from the default Vivaldi location.'
     echo $''
-    echo $'\e[1;36m:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     exit
 fi
@@ -121,7 +124,36 @@ function errorExit {
 }
 
 function sendWarning {
-    echo $'\e[91mWARNING::> ' "$1" $'\e[0m' 1>&2
+    echo $'\e[93mWARNING::> ' "$1" $'\e[0m' 1>&2
+}
+
+function isDefault {
+    [ "${1}" == "${vpcli_config_default}" ] && echo "1"
+}
+
+function listProfiles {
+    local default_text=""
+    local profile_text=""
+    echo $''
+    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mProfiles List \e[1;36m:::>\e[0m'
+    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $''
+    echo $''
+    for f in "${vpcli_path}/"*
+    do
+        local profile_name="${f##/*/}"
+        [[ -d "$f" ]] && profile_text=$'\e[1m'"${profile_name}"$'\e[0m'
+        if [[ $(isDefault "${profile_name}") == "1" ]]; then
+            default_text="default"
+            profile_text=$'\e[1;36m'"${profile_name}"$'\e[0m'
+        fi
+        echo ":: ${profile_text}   ${default_text}"
+    done
+    echo $''
+    echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
+    echo $''
+    exit 0
 }
 
 function copyProfile() {
@@ -150,8 +182,10 @@ function copyProfile() {
 
 function makeDefault() {
     [[ ! -d "${vpcli_default}" ]] && errorExit "Default profile ${vpcli_default} does not exist or is not a directory. Update your Vivaldi Profiles CLI configuration."
+    [[ ! -d "${vpcli_profile}" ]] && errorExit "You can only make an established profile the default. Please create ${vpcli_default} without the -d flag and then run this again afterward"
+    [[ $(isDefault "${vpcli_name}") ]] && sendWarning "${vpcli_name} is already your default profile!" && return 0
+#    [[ $(ps aux | grep "vivaldi"
 
-    [[ "${vpcli_config_default}" = "${vpcli_name}" ]] && errorExit "${vpcli_name} is already your default profile!"
     local fq_default="${vpcli_path}/${vpcli_config_default}"
     #| Backup here if need be.
     #| Migrate default back to temp
@@ -159,9 +193,7 @@ function makeDefault() {
     rm -rf "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" > /dev/null 2>&1
     rsync -a "${vpcli_default}/" "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" || errorExit "Couldn't restore ${fq_default} to temp ${vpcli_path}/.vpcli/temp"
     rsync -a "${vpcli_profile}/" "${vpcli_path}/.vpcli/temp/${vpcli_name}/" || errorExit "Couldn't restore ${vpcli_profile} to temp ${vpcli_path}/.vpcli/temp"
-    rm -rf "${fq_default}" || errorExit "Could not remove the symlink from previous default: ${fq_default}"
-    rsync -a "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" "${vpcli_profile}/" || errorExit "Couldn't restore ${fq_default} from temp!"
-    rm -rf "${fq_default}" || errorExit "Could not remove the symlink from previous default: ${fq_default}"
+    rm -f "${fq_default}" || errorExit "Could not remove the symlink from previous default: ${fq_default}"
 
     #| Update default
     rsync -a "${vpcli_profile}/" "${vpcli_default}/" || errorExit "Couldn't copy ${vpcli_profile}/ to ${vpcli_default} backup of old default available here: ${vpcli_path}/.vpcli/temp/${vpcli_config_default}/"
@@ -173,11 +205,15 @@ vpcli_no_new=0
 vpcli_make_default=0
 vpcli_source=''
 vpcli_name=''
-[[ -f "${vpcli_path}/.vpcli/default" ]] && vpcli_config_default=$(cat "${vpcli_path}/.vpcli/default")
+[[ -f "${vpcli_path}/.vpcli/default" ]] && vpcli_config_default="$(cat "${vpcli_path}/.vpcli/default")"
 
 for i in "$@"
 do
     case $i in
+        -l)
+            listProfiles
+            shift
+        ;;
         -n)
             vpcli_no_new=1
             shift # past argument
@@ -228,10 +264,10 @@ if [[ ! -d "${vpcli_profile}" ]]; then
     fi
 fi
 
+#| -d | Default: Make this profile the default.
+[[ ${vpcli_make_default} > 0 ]] && makeDefault
+
 #| Load Vivaldi Instance
 open -n -a /Applications/Vivaldi.app --args --user-data-dir="${vpcli_profile}" || errorExit "Something has gone terribly wrong! We couldn't open Vivaldi with your profile!"
 
 exit 0;
-
-#| -d | Default: Make this profile the default.
-[[ ${vpcli_make_default} > 0 ]] && makeDefault

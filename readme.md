@@ -1,5 +1,6 @@
 # Vivaldi Profile CLI
 
+#### Warning: This is in beta. Please backup your profiles!
 ##### Documentation still under development, sorry!
 
 Vivali Profile CLI is a command-line utility for managing multiple instance profiles in [Vivaldi]('https://vivaldi.com') browser. Think of it like the multiple profile switcher in Chrome.  
@@ -17,23 +18,26 @@ These instructions will get you a copy of the project up and running on your loc
 * OS X, MacOS or Linux with bash
 * [Vivaldi]('https://vivaldi.com') Web Browser
 
-### Installing
+### Installation
 
-Installing Vivialdi
+[Download](https://www.google.com.au/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwjKtf6m89XXAhUIkZQKHYCuBVYQFggmMAA&url=https%3A%2F%2Fvivaldi.com%2Fdownload%2F%3Flang%3Den&usg=AOvVaw1b7SMyM9QJfW0t_REb_z9R) and Install Vivialdi if you don't have it yet.
 
-Install via curl (copy and past this whole block)
+### Install via curl
+
+#### Copy and paste this entire block in terminal
 ```bash
-curl https://raw.github.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh > vpcli.sh && 
+curl -s https://raw.github.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh && 
   chmod 755 vpcli.sh &&  
   mv vpcli.sh /usr/local/bin/vpcli &&
-  source ~/.bashrc
+  vpcli
+  
 ```
-OR One step at a time:
 
+#### OR One step at a time
 
 1. Download
 ```bash
-curl https://raw.github.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh
+curl https://cdn.rawgit.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh
 ```
 
 
@@ -45,17 +49,28 @@ chmod 755 vpcli.sh
 
 3. Give it a keyboard friendly name like `vpcli` when you move it to /usr/local/bin
 ```bash
-mv vpcli.sh /usr/local/bin/vpcli 
+mv vpcli.sh /usr/local/bin/vpcli
 ```
 
+4. Test
+```bash
+vpcli
+```
 
-4. Make sure you have the updated PATH by sourcing .profile (macOS)
+You should see this:
+
+![vpcli-manual](img/vpcli.png)
+
+
+### You should see the help screen:
+
+If you have `vpcli` in your `/usr/local/bin` directory and are still not able to access the command please make sure you have followed the previous steps coorectly. If you're still having trouble then please ensure you are loading the updated PATH by sourcing .profile (macOS)
 ```bash
 source ~/.profile
 ```
  or .bashrc (anywhere respectable).
 ```bash
-source ~/.profile
+source ~/.bashrc
 ```
 
 ## Versioning
