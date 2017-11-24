@@ -37,7 +37,7 @@ curl -O https://cdn.rawgit.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh &&
 
 1. Download
 ```bash
-curl https://cdn.rawgit.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh
+curl -O https://cdn.rawgit.com/wfurphy/vivaldi-profiles-cli/master/vpcli.sh
 ```
 
 
@@ -86,4 +86,4 @@ This project is licensed under the MIT License - see the [LICENSE](wpcli.sh) at 
 
 ## Acknowledgments
 
-* Hat tip to Russell Brenner for introducing me to Vivaldi.
+* Hat tip to Russell Brenner for introducing me to Vivaldi and for finiding my pesky typo!
