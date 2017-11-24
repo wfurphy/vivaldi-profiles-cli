@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #|---------------------------------------------------------------------------------------------------->
-#| Vivaldi Profile CLI v0.1.1
+#| Vivaldi Profile CLI v0.1.3
 #|
 #| A command-line utility for managing multiple instance profiles in Vivaldi browser.
 #| Author: Will Furphy
@@ -65,7 +65,6 @@ vpcli_default="${HOME}/Library/Application Support/Vivaldi"
 #| THINGS TODO ::>
 #|---------------------------------------------------------------->
 # TODO> Finish -b? Backup feature
-# TODO> Check if Vivaldi is running when changing default profile
 # TODO> Improve changing default profile process
 # TODO> Add -v Verbose mode
 # TODO> Add -s Silent mode (Success is silent anyway but this will provide complete balckout for use with other scripts / apps)
@@ -76,7 +75,7 @@ vpcli_default="${HOME}/Library/Application Support/Vivaldi"
 if [ $# -eq 0 ]; then
     echo $''
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
-    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.1 \e[0m'
+    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.3 \e[0m'
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     echo $''
@@ -182,9 +181,9 @@ function copyProfile() {
 
 function makeDefault() {
     [[ ! -d "${vpcli_default}" ]] && errorExit "Default profile ${vpcli_default} does not exist or is not a directory. Update your Vivaldi Profiles CLI configuration."
-    [[ ! -d "${vpcli_profile}" ]] && errorExit "You can only make an established profile the default. Please create ${vpcli_default} without the -d flag and then run this again afterward"
-    [[ $(isDefault "${vpcli_name}") ]] && sendWarning "${vpcli_name} is already your default profile!" && return 0
-#    [[ $(ps aux | grep "vivaldi"
+    [[ ! -d "${vpcli_profile}" ]] && errorExit "You can only make an established profile the default. Please create ${vpcli_default} without the -d flag and then run this again."
+    [[ $(isDefault "${vpcli_name}") || "${vpcli_name}" = "default" ]] && sendWarning "${vpcli_name} is already your default profile!" && return 0
+    [[ $(pgrep "Vivaldi") ]] && errorExit "Please quit all instances of Vivaldi before setting the default profile!"
 
     local fq_default="${vpcli_path}/${vpcli_config_default}"
     #| Backup here if need be.
@@ -194,13 +193,20 @@ function makeDefault() {
     rsync -a "${vpcli_default}/" "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" || errorExit "Couldn't restore ${fq_default} to temp ${vpcli_path}/.vpcli/temp"
     rsync -a "${vpcli_profile}/" "${vpcli_path}/.vpcli/temp/${vpcli_name}/" || errorExit "Couldn't restore ${vpcli_profile} to temp ${vpcli_path}/.vpcli/temp"
     rm -f "${fq_default}" || errorExit "Could not remove the symlink from previous default: ${fq_default}"
+    ln -s "${vpcli_default}" "${vpcli_profile}" || errorExit "Could not create symlink for ${vpcli_name} as default profile in ${vpcli_path}!"
 
     #| Update default
     rsync -a "${vpcli_profile}/" "${vpcli_default}/" || errorExit "Couldn't copy ${vpcli_profile}/ to ${vpcli_default} backup of old default available here: ${vpcli_path}/.vpcli/temp/${vpcli_config_default}/"
 
+    #| Restore previous default as normal profile
+    rsync -a "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" "${fq_default}/" || errorExit "Couldn't restore ${vpcli_path}/.vpcli/temp/${vpcli_config_default}/ to ${fq_default}/"
+
     #| Clean up and change settings
-    echo "${vpcli_name}" > "${vpcli_path}/.vpcli/default" || errorExit "Could not create the config file in in ${vpcli_path}/.vpcli"
+    echo "${vpcli_name}" > "${vpcli_path}/.vpcli/default" || errorExit "Could not edit the config file ${vpcli_path}/.vpcli/default"
+    rm -rf "${vpcli_profile}" || errorExit "Could not remove the previous profile ${fq_default}"
+    ln -s "${vpcli_default}" "${vpcli_profile}" || errorExit "Could not create symlink for ${vpcli_name} as default profile in ${vpcli_path}!"
 }
+
 vpcli_no_new=0
 vpcli_make_default=0
 vpcli_source=''
@@ -233,7 +239,7 @@ do
     esac
 done
 
-[[ -z $vpcli_name ]] && errorExit "You must provide a profile name"
+[[ -z ${vpcli_name} ]] && errorExit "You must provide a profile name"
 
 [[ -n "${vpcli_config_default}" ]] && cpvli_name="${vpcli_config_default}"
 vpcli_profile="${vpcli_path}/${vpcli_name}"
@@ -246,9 +252,10 @@ fi
 #| Check the default setting exists and create it if it doesn't.
 if [[ ! -f "${vpcli_path}/.vpcli/default" ]]; then
     mkdir -p "${vpcli_path}/.vpcli/temp" || errorExit "Could not create config folder '${vpcli_path}/.vpcli'! This is important for changing defaults without loosing any data!"
-    echo "orginal" > "${vpcli_path}/.vpcli/default" || errorExit "Could not create default setting file '${vpcli_path}/.vpcli/default'! This is important for changing defaults without loosing any data!"
+    echo "original" > "${vpcli_path}/.vpcli/default" || errorExit "Could not create default setting file '${vpcli_path}/.vpcli/default'! This is important for changing defaults without loosing any data!"
+    rsync -a "${vpcli_default}" "${vpcli_path}/.vpcli/temp/original/" || errorExit "Couldn't backup orginal profile to temp ${vpcli_path}/.vpcli/temp"
     ln -s "${vpcli_default}" "${vpcli_path}/default" || errorExit "Could not create symlink to default profile ${vpcli_default} in ${vpcli_path}!"
-    ln -s "${vpcli_default}" "${vpcli_path}/original" || errorExit "Could not create symlink to default profile ${vpcli_default} in ${vpcli_path}!"
+    ln -s "${vpcli_default}" "${vpcli_path}/original" || errorExit "Could not create symlink to original profile ${vpcli_default} in ${vpcli_path}!"
 fi
 
 #| -c | Copy: If this flag exists then copy from the specified profile.
