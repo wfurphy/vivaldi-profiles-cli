@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #|---------------------------------------------------------------------------------------------------->
-#| Vivaldi Profile CLI v0.1.3
+#| Vivaldi Profiles CLI v0.1.4
 #|
 #| A command-line utility for managing multiple instance profiles in Vivaldi browser.
 #| Author: Will Furphy
@@ -38,20 +38,18 @@
 #| Profile Path
 #| Where you would like this tool to store your profiles
 #|---------------------------------------------------------------->
-
 # Uncomment one or write in your own fully qualified custom path
 # Dropbox on MacOS ( WARNING: Potential performance issues. )
 #vpcliPath="${HOME}/Dropbox/Vivaldi-Profiles"
 # MacOS
 vpcli_path="${HOME}/Library/Application Support/Vivaldi-Profiles"
 # Linux
-#vpcliPath="${HOME}/~/.config/vivaldi-profiles"
+#vpcliPath="${HOME}/.config/vivaldi-profiles"
 
 #|---------------------------------------------------------------->
 #| Default Vivaldi Profile
 #| Where Vivaldi loads your default profile from (the only one it has)
 #|---------------------------------------------------------------->
-
 # Uncomment one or write in your own fully qualified custom path
 # MacOS
 vpcli_default="${HOME}/Library/Application Support/Vivaldi"
@@ -67,15 +65,15 @@ vpcli_default="${HOME}/Library/Application Support/Vivaldi"
 # TODO> Finish -b? Backup feature
 # TODO> Improve changing default profile process
 # TODO> Add -v Verbose mode
-# TODO> Add -s Silent mode (Success is silent anyway but this will provide complete balckout for use with other scripts / apps)
+# TODO> Add -s Silent mode (Success is silent anyway, as it should be for *nix commands. Silent will provide complete blackout for use with other scripts / apps)
 # TODO> Add -q Quit Options
-# TODO> Alter settings via CLI
-# TODO> Dropbox: Asses viability of restricting to profile files and not have entire prefs for instance in Dropbox
+# TODO> Add -p? --prefs? Alter default settings via CLI
+# TODO> Dropbox: Asses viability of restricting to profile files and not have entire prefs and cache for instance in Dropbox
 
 if [ $# -eq 0 ]; then
     echo $''
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
-    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.3 \e[0m'
+    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.4 \e[0m'
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     echo $''
