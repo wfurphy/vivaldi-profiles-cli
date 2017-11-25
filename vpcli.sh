@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #|---------------------------------------------------------------------------------------------------->
-#| Vivaldi Profiles CLI v0.1.4
+#| Vivaldi Profiles CLI v0.1.5
 #|
 #| A command-line utility for managing multiple instance profiles in Vivaldi browser.
 #| Author: Will Furphy
@@ -70,10 +70,10 @@ vpcli_default="${HOME}/Library/Application Support/Vivaldi"
 # TODO> Add -p? --prefs? Alter default settings via CLI
 # TODO> Dropbox: Asses viability of restricting to profile files and not have entire prefs and cache for instance in Dropbox
 
-if [ $# -eq 0 ]; then
+function displayHelp {
     echo $''
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
-    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.4 \e[0m'
+    echo $'\e[1;36m:: Vivaldi Profiles CLI :: \e[0m\e[1mUseage and Options (RTFM) \e[1;36m:::>\e[0m                                           \e[1;36mv0.1.5 \e[0m'
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     echo $''
@@ -103,7 +103,6 @@ if [ $# -eq 0 ]; then
     echo $'             \e[0mbe created if it does not exist and an error will be thrown.'
     echo $''
     echo $'   \e[0m\e[1m-d        Set Default: \e[0mMake the specified profile your default profile.'
-    echo $'             \e[0mWARNING: This will overwrite the current default (confirmation required).'
     echo $''
     echo $'   \e[0m\e[1m-c \e[0m\e[4msource\e[0m'
     echo $'             \e[1mCopy Profile: \e[0mMakes a complete copy of the source profile under the target profile.'
@@ -113,7 +112,7 @@ if [ $# -eq 0 ]; then
     echo $'\e[1;36m::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> \e[0m'
     echo $''
     exit
-fi
+}
 
 function errorExit {
     echo $'\e[91mERROR::> ' "$1" $'\e[0m' 1>&2
@@ -163,19 +162,14 @@ function copyProfile() {
             exit 0
         fi
     fi
-    echo '\n'
-    rsync -a "${1}/" "${2}/" || errorExit "Copying ${1} to ${2} FAILED";
-}
+    echo $'\n'
 
-#function backupProfile() {
-    # TODO> Complete Backup as this function accepting 1 parameter - profile name.
-    #rm -f "${vpcli_path}/.vpcli/defbak2.tgz" > /dev/null 2>&1
-    #rm -f "${vpcli_path}/.vpcli/${vpcli_name}2.tgz" > /dev/null 2>&1
-    #[[ -f "${vpcli_path}/.backup/defbak.tgz" ]] && mv "${vpcli_path}/.vpcli/defbak.tgz" "${vpcli_path}/.vpcli/defbak2.tgz"
-    #[[ -f "${vpcli_path}/.vpcli/${vpcli_name}.tgz" ]] && mv "${vpcli_path}/.vpcli/defbak.tgz" "${vpcli_path}/.vpcli/${vpcli_name}2.tgz"
-    #tar -zcvf "${vpcli_path}/.vpcli/defbak.tgz" "${vpcli_default}" || errorExit "Could not backup ${vpcli_default}!";
-    #tar -zcvf "${vpcli_path}/.vpcli/${vpcli_name}.tgz" "${vpcli_profile}" || errorExit "Could not backup ${vpcli_profile}!";
-#}
+    if [[ ${vpcli_no_new} -eq 0 ]]; then
+        rsync -a "${1}/" "${2}/" || errorExit "Copying ${1} to ${2} FAILED";
+    else
+        errorExit "[ -n ] No New mode activated and ${vpcli_profile} doesn't exist!"
+    fi
+}
 
 function makeDefault() {
     [[ ! -d "${vpcli_default}" ]] && errorExit "Default profile ${vpcli_default} does not exist or is not a directory. Update your Vivaldi Profiles CLI configuration."
@@ -189,21 +183,25 @@ function makeDefault() {
     rm -rf "${vpcli_path}/.vpcli/temp/${vpcli_name}/" > /dev/null 2>&1
     rm -rf "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" > /dev/null 2>&1
     rsync -a "${vpcli_default}/" "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" || errorExit "Couldn't restore ${fq_default} to temp ${vpcli_path}/.vpcli/temp"
+    #| Make a backup of the profile becoming default
     rsync -a "${vpcli_profile}/" "${vpcli_path}/.vpcli/temp/${vpcli_name}/" || errorExit "Couldn't restore ${vpcli_profile} to temp ${vpcli_path}/.vpcli/temp"
     rm -f "${fq_default}" || errorExit "Could not remove the symlink from previous default: ${fq_default}"
     ln -s "${vpcli_default}" "${vpcli_profile}" || errorExit "Could not create symlink for ${vpcli_name} as default profile in ${vpcli_path}!"
-
-    #| Update default
-    rsync -a "${vpcli_profile}/" "${vpcli_default}/" || errorExit "Couldn't copy ${vpcli_profile}/ to ${vpcli_default} backup of old default available here: ${vpcli_path}/.vpcli/temp/${vpcli_config_default}/"
-
     #| Restore previous default as normal profile
     rsync -a "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" "${fq_default}/" || errorExit "Couldn't restore ${vpcli_path}/.vpcli/temp/${vpcli_config_default}/ to ${fq_default}/"
-
+    #| Update default
+    rsync -a "${vpcli_profile}/" "${vpcli_default}/" || errorExit "Couldn't copy ${vpcli_profile}/ to ${vpcli_default} backup of old default available here: ${vpcli_path}/.vpcli/temp/${vpcli_config_default}/"
     #| Clean up and change settings
     echo "${vpcli_name}" > "${vpcli_path}/.vpcli/default" || errorExit "Could not edit the config file ${vpcli_path}/.vpcli/default"
-    rm -rf "${vpcli_profile}" || errorExit "Could not remove the previous profile ${fq_default}"
+    rm -rf "${vpcli_profile}" || errorExit "Could not remove the previous profile ${vpcli_profile}"
     ln -s "${vpcli_default}" "${vpcli_profile}" || errorExit "Could not create symlink for ${vpcli_name} as default profile in ${vpcli_path}!"
+    rm -rf "${vpcli_path}/.vpcli/temp/${vpcli_name}/" > /dev/null 2>&1
+    rm -rf "${vpcli_path}/.vpcli/temp/${vpcli_config_default}/" > /dev/null 2>&1
 }
+
+if [ $# -eq 0 ]; then
+    displayHelp
+fi
 
 vpcli_no_new=0
 vpcli_make_default=0
@@ -231,6 +229,11 @@ do
             shift # past argument
             shift # past value
         ;;
+        -*)
+            sendWarning "${1} is an invalid option. The following help can be seen anytime by using 'vpcli' without any arguments."
+            displayHelp
+            shift
+        ;;
         *)
             vpcli_name="${1//[[:blank:]]/}"
         ;;
@@ -239,7 +242,6 @@ done
 
 [[ -z ${vpcli_name} ]] && errorExit "You must provide a profile name"
 
-[[ -n "${vpcli_config_default}" ]] && cpvli_name="${vpcli_config_default}"
 vpcli_profile="${vpcli_path}/${vpcli_name}"
 
 #| Check the profile's parent directory exists and create it if it doesn't.
@@ -247,11 +249,18 @@ if [[ ! -d "${vpcli_path}" ]]; then
     mkdir "${vpcli_path}" || errorExit "Could not create profile's parent directory ${vpcli_path}!"
 fi
 
-#| Check the default setting exists and create it if it doesn't.
+#| Check the default setting exists and create it if it doesn't. (First Run)
 if [[ ! -f "${vpcli_path}/.vpcli/default" ]]; then
+    #| Check the profile's parent directory exists and create it if it doesn't.
+    if [[ ! -d "${vpcli_path}" ]]; then
+        mkdir "${vpcli_path}" || errorExit "Could not create profile's parent directory ${vpcli_path}!"
+    fi
+
+    [[ ! -d "${vpcli_default}" ]] && errorExit "Default profile ${vpcli_default} does not exist or is not a directory. Update your Vivaldi Profiles CLI configuration."
+
     mkdir -p "${vpcli_path}/.vpcli/temp" || errorExit "Could not create config folder '${vpcli_path}/.vpcli'! This is important for changing defaults without loosing any data!"
     echo "original" > "${vpcli_path}/.vpcli/default" || errorExit "Could not create default setting file '${vpcli_path}/.vpcli/default'! This is important for changing defaults without loosing any data!"
-    rsync -a "${vpcli_default}" "${vpcli_path}/.vpcli/temp/original/" || errorExit "Couldn't backup orginal profile to temp ${vpcli_path}/.vpcli/temp"
+    rsync -a "${vpcli_default}" "${vpcli_path}/.vpcli/temp/original/" || errorExit "Couldn't backup original profile to temp ${vpcli_path}/.vpcli/temp"
     ln -s "${vpcli_default}" "${vpcli_path}/default" || errorExit "Could not create symlink to default profile ${vpcli_default} in ${vpcli_path}!"
     ln -s "${vpcli_default}" "${vpcli_path}/original" || errorExit "Could not create symlink to original profile ${vpcli_default} in ${vpcli_path}!"
 fi
