@@ -152,6 +152,16 @@ function listProfiles {
     exit 0
 }
 
+function backupProfile() {
+    rm -f "${vpcli_path}/.vpcli/defbak2.tgz" > /dev/null 2>&1
+    rm -f "${vpcli_path}/.vpcli/${vpcli_name}2.tgz" > /dev/null 2>&1
+    [[ -f "${vpcli_path}/.backup/defbak.tgz" ]] && mv "${vpcli_path}/.vpcli/defbak.tgz" "${vpcli_path}/.vpcli/defbak2.tgz"
+    [[ -f "${vpcli_path}/.vpcli/${vpcli_name}.tgz" ]] && mv "${vpcli_path}/.vpcli/defbak.tgz" "${vpcli_path}/.vpcli/${vpcli_name}2.tgz"
+    tar -zcvf "${vpcli_path}/.vpcli/defbak.tgz" "${vpcli_default}" || errorExit "Could not backup ${vpcli_default}!";
+    tar -zcvf "${vpcli_path}/.vpcli/${vpcli_name}.tgz" "${vpcli_profile}" || errorExit "Could not backup ${vpcli_profile}!";
+
+}
+
 function copyProfile() {
     [[ -d "${1}" ]] || errorExit "Cannot copy profile. ${1} does not exist or is not a directory."
 
