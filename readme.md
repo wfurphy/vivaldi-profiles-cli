@@ -12,7 +12,7 @@ So, now that you have Vivaldi Profiles CLI, you can uninstall Chrome! ;)
 These instructions will get you a copy of VPCLI up and running on your local machine.
 
 ### Prerequisites
-* OS X, MacOS or Linux with bash
+* OS X, MacOS or Linux with bash _[ Maybe Windows 10 with Bash Shell? (completely untested) ]_
 * [Vivaldi](https://vivaldi.com) web browser
 
 #### WARNING: This is beta software. Please backup your profile before you start!
