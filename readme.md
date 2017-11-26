@@ -94,7 +94,7 @@ This is set to the MacOS version `"${HOME}/Library/Application Support/Vivaldi"`
 We use [SemVer](http://semver.org/) 
 
 ## Authors
-Will Furphy - [Technique](https://technique.software)
+Will Furphy
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](wpcli.sh) at the top of the file for details
